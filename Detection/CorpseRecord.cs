@@ -2,8 +2,8 @@ namespace LooseEnds.Detection
 {
     /// <summary>
     /// Per-corpse state tracked by <see cref="CorpseTracker"/>. Keyed by the NPC's Unity instance id. Holds the
-    /// discovery latch + reaction timing (so a body fires a response at most once / under cooldown) and the cached
-    /// original drag weights so the heavier-corpse change can be restored exactly on drop.
+    /// discovery latch + reaction timing (so a body fires a response at most once / under cooldown). The corpse
+    /// weight cache (for restoring the original drag on drop) lives in <c>Weight/CorpseWeight.cs</c>.
     /// </summary>
     internal sealed class CorpseRecord
     {
@@ -22,10 +22,5 @@ namespace LooseEnds.Detection
         /// <summary>The police response has fired for this body.</summary>
         public bool Dispatched;
         public float DispatchedTime;
-
-        // ----- weight cache (Step 5) -----
-        public bool WeightCached;
-        public float OrigMass;
-        public float OrigDragForceMult;
     }
 }
