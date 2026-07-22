@@ -1,6 +1,6 @@
 # Loose Ends - Bodies That Matter for Schedule I
 
-> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de](https://support.doodesch.de).
+> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/looseends](https://support.doodesch.de/looseends).
 
 > **Hide your bodies, or face the heat.** In vanilla, police and citizens walk over a corpse like it
 > isn't there. Loose Ends makes living NPCs who actually *see* a dead body react - citizens call the
