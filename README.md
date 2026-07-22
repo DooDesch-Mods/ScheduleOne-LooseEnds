@@ -2,7 +2,7 @@
 
 A MelonLoader (IL2CPP) mod for **Schedule I** that makes dead bodies actually matter.
 
-> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de](https://support.doodesch.de).
+> 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/looseends](https://support.doodesch.de/looseends).
 
 In vanilla, police and citizens walk over a corpse like it isn't there, and a body drags around as if it weighs as
 much as a plastic bag. Loose Ends fixes both:
