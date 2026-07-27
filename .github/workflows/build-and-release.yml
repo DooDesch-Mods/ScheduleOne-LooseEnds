@@ -11,7 +11,6 @@ name: Build and Release on Tag
 #                               TextRenderingModule, InputLegacyModule)
 #       lib/il2cpp/melonloader (MelonLoader, 0Harmony, Il2CppInterop.Runtime)
 #       lib/il2cpp/s1api       (S1API.Il2Cpp.MelonLoader.dll)
-#       lib/modmanager         (ModManager&PhoneApp.dll - optional dependency)
 #   - Secrets: WORKSPACE_TOKEN (SSH deploy key for that repo), THUNDERSTORE_TOKEN, NEXUSMODS_API_KEY.
 #   - Repo/org variable NEXUS_FILE_GROUP_ID = the Nexus mod's file group id (the Nexus upload job is skipped
 #     until this is set, so GitHub + Thunderstore releases work immediately).
