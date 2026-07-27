@@ -42,7 +42,6 @@
 
     <!-- Workspace lib roots (mirrors Trashville/RVRepairVan ../Workspace/lib) -->
     <WorkspaceLibPath Condition="'$(WorkspaceLibPath)' == ''">$(MSBuildThisFileDirectory)../Workspace/lib</WorkspaceLibPath>
-    <ModManagerPath Condition="'$(ModManagerPath)' == ''">$(WorkspaceLibPath)/modmanager</ModManagerPath>
     <ModsDirectory Condition="'$(ModsDirectory)' == ''">D:\Launcher\SteamLibrary\steamapps\common\Schedule I\Mods</ModsDirectory>
   </PropertyGroup>
 
@@ -136,11 +135,6 @@
     </Reference>
     <Reference Include="UnityEngine.InputLegacyModule">
       <HintPath>$(GameManagedPath)/UnityEngine.InputLegacyModule.dll</HintPath>
-      <Private>false</Private>
-    </Reference>
-    <!-- Optional dependency: Mod Manager &amp; Phone App (in-phone config UI + live settings events). -->
-    <Reference Include="ModManager&amp;PhoneApp">
-      <HintPath>$(ModManagerPath)/ModManager&amp;PhoneApp.dll</HintPath>
       <Private>false</Private>
     </Reference>
   </ItemGroup>

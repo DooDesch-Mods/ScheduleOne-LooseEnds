@@ -40,11 +40,10 @@
 
 - **Schedule I** (IL2CPP) with **MelonLoader 0.7.3+**.
 - **S1API** (pulled in as a dependency).
-- Optional: **Mod Manager & Phone App** for the in-game settings UI.
 
 ## Settings
 
-Editable in the Mod Manager & Phone App UI or `UserData/MelonPreferences.cfg`
+Editable in `UserData/MelonPreferences.cfg`
 (category `LooseEnds_01_Main`):
 
 | Setting | Default | Meaning |

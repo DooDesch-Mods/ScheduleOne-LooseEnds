@@ -12,7 +12,6 @@ using Snitch.Api;                 // Profiler section timing (Debug + EnableSnit
 
 [assembly: MelonInfo(typeof(LooseEnds.Core), "Loose Ends", "1.1.0", "DooDesch", null)]
 [assembly: MelonGame("TVGS", "Schedule I")]
-[assembly: MelonOptionalDependencies("ModManager&PhoneApp")]
 
 namespace LooseEnds
 {
@@ -55,8 +54,6 @@ namespace LooseEnds
             GameLifecycle.OnSaveStart += ResetState;
             GameLifecycle.OnPreSceneChange += ResetState;
 
-            HookModManager();
-
 #if DEBUG
             Log.Msg("Loose Ends v1.1.0 (DEBUG) - witness system + corpse weight. Dev probes in the config.");
 #else
@@ -72,21 +69,6 @@ namespace LooseEnds
             Weight.CorpseWeight.RestoreAll();   // restore (not just drop) carried-body physics before wiping the cache
             // Drop the arrest-watcher edge state so a stale sample from a previous save/scene can't mis-compare.
             if (Instance != null) Instance._prevMinsSinceArrested = -1;
-        }
-
-        private void HookModManager()
-        {
-            // Optional dependency - isolated + guarded so a missing ModManager never breaks load.
-            try
-            {
-                ModManagerPhoneApp.ModSettingsEvents.OnPhonePreferencesSaved += OnSettingsSaved;
-                ModManagerPhoneApp.ModSettingsEvents.OnMenuPreferencesSaved += OnSettingsSaved;
-                Log.Msg("[Core] Mod Manager & Phone App hooked (settings apply live).");
-            }
-            catch (Exception)
-            {
-                Log.Msg("[Core] Mod Manager & Phone App not present - settings via the MelonPreferences config file (apply live on save).");
-            }
         }
 
         private void OnSettingsSaved()

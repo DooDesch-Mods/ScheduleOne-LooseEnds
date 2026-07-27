@@ -20,14 +20,13 @@ much as a plastic bag. Loose Ends fixes both:
    drags sluggishly (and is heavier to throw), scaled by a configurable multiplier. It does **not** slow you down; the
    weight is in the body, not your legs.
 
-Everything is configurable in the in-game **Mod Manager / Phone App** settings, including how punishing the police
+Everything is configurable in `UserData/MelonPreferences.cfg`, including how punishing the police
 response is.
 
 ## Requirements
 
 - MelonLoader (IL2CPP build of Schedule I)
 - [S1API](https://thunderstore.io) (Il2Cpp)
-- Optional: **Mod Manager & Phone App** - if present, the settings appear in-game (phone + pause menu) and apply live.
   Without it the mod still works; settings live in `UserData/MelonPreferences.cfg` under `[LooseEnds_01_Main]`.
 
 ## How it works
