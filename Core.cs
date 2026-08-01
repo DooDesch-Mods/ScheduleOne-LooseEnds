@@ -10,7 +10,7 @@ using LooseEnds.Reaction;
 using Snitch.Api;                 // Profiler section timing (Debug + EnableSnitch only; no-op when host absent)
 #endif
 
-[assembly: MelonInfo(typeof(LooseEnds.Core), "Loose Ends", "1.1.0", "DooDesch", null)]
+[assembly: MelonInfo(typeof(LooseEnds.Core), "Loose Ends", "1.1.1", "DooDesch", null)]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
 namespace LooseEnds
@@ -55,9 +55,9 @@ namespace LooseEnds
             GameLifecycle.OnPreSceneChange += ResetState;
 
 #if DEBUG
-            Log.Msg("Loose Ends v1.1.0 (DEBUG) - witness system + corpse weight. Dev probes in the config.");
+            Log.Msg("Loose Ends v1.1.1 (DEBUG) - witness system + corpse weight. Dev probes in the config.");
 #else
-            Log.Msg("Loose Ends v1.1.0 - witness system + corpse weight.");
+            Log.Msg("Loose Ends v1.1.1 - witness system + corpse weight.");
 #endif
         }
 

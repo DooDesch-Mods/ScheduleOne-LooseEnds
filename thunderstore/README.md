@@ -7,7 +7,7 @@
 > police, police enter the game's real **"Investigating"** pursuit - and makes carried corpses heavier,
 > so hauling a body to its hiding spot has real weight and stress.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.1.1-blue)
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![S1API](https://img.shields.io/badge/S1API-required-orange)

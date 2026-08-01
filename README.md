@@ -111,7 +111,7 @@ The post-build step copies the DLL to `Mods/` (path set by `ModsDirectory` in th
 
 A few behaviours are best confirmed live in your own save. Build **Debug**, load a save, then:
 
-1. **It loads cleanly.** Check the MelonLoader log for `Loose Ends v1.1.0` and `[Core] Witness system ACTIVE`
+1. **It loads cleanly.** Check the MelonLoader log for `Loose Ends v1.1.1` and `[Core] Witness system ACTIVE`
    (the latter appears once you are in a save on the host). No errors.
 2. **Make a corpse.** Open the dev console and run `triggerlightning <npc_id>` (e.g. `triggerlightning cranky_frank`)
    to kill an NPC, or kill one yourself. The log should show `[Killer] NPC died ...` and `[Corpse] tracked new corpse`.
