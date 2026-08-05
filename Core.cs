@@ -10,7 +10,7 @@ using LooseEnds.Reaction;
 using Snitch.Api;                 // Profiler section timing (Debug + EnableSnitch only; no-op when host absent)
 #endif
 
-[assembly: MelonInfo(typeof(LooseEnds.Core), "Loose Ends", "1.1.1", "DooDesch", null)]
+[assembly: MelonInfo(typeof(LooseEnds.Core), "Loose Ends", DooDesch.ModVersion.Current, "DooDesch", "https://github.com/DooDesch-Mods/ScheduleOne-LooseEnds")]
 [assembly: MelonGame("TVGS", "Schedule I")]
 
 namespace LooseEnds
