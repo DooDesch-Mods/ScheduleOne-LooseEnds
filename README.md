@@ -4,6 +4,8 @@ A MelonLoader (IL2CPP) mod for **Schedule I** that makes dead bodies actually ma
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/looseends](https://support.doodesch.de/looseends).
 
+[![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
+
 📖 **Documentation:** [docs.doodesch.de/mods/looseends/](https://docs.doodesch.de/mods/looseends/)
 
 In vanilla, police and citizens walk over a corpse like it isn't there, and a body drags around as if it weighs as
