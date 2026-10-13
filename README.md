@@ -5,6 +5,7 @@ A MelonLoader (IL2CPP) mod for **Schedule I** that makes dead bodies actually ma
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/looseends](https://support.doodesch.de/looseends).
 
 [![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
+[![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi/badge.svg)](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi)
 
 📖 **Documentation:** [docs.doodesch.de/mods/looseends/](https://docs.doodesch.de/mods/looseends/)
 
