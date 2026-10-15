@@ -11,6 +11,7 @@
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![S1API](https://img.shields.io/badge/S1API-required-orange)
+[![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
 
 [![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi/badge.svg)](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi)
 
