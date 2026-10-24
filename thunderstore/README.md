@@ -17,23 +17,31 @@
 
 ## What it does
 
-1. **Witnesses react.** A living NPC (citizen or police) who actually *sees* a dead NPC reports it:
-   citizens get the police called, police enter the game's real **"Investigating"** pursuit state. A
-   body that is hidden from sight - in a dumpster, behind a wall, indoors, underwater, in bushes - is
+1. **Witnesses react.** A living NPC who actually *sees* a dead NPC reports it. A citizen pulls out
+   their phone and calls the police over about 4 seconds; knock them out or kill them before the call
+   connects and nobody comes. A police officer reports at once.
+   - **The witness saw only the body:** the police do not know who did it. An officer walks to the
+     body and searches the area for about 2 minutes. Nobody is wanted. If the officer sees you near
+     the body, you become the suspect. Each further body that day sends one more officer, up to 3.
+   - **The witness saw you at the body:** they describe you and you become the suspect. They also
+     remember your face until the next day and call again if they see you.
+
+   A body that is hidden from sight - in a dumpster, behind a wall, indoors, underwater, in bushes - is
    never seen, so nothing happens. That is the whole point: hide your bodies.
-2. **Corpses are heavier.** While you carry a body you move noticeably slower (and the body drags more
-   sluggishly), scaled by a configurable multiplier - adding weight and stress to hauling a corpse to
-   its hiding spot.
+2. **Corpses are heavier.** While you drag a body it resists being pulled: it lags behind, drags
+   sluggishly and is heavier to throw, scaled by a configurable multiplier. Your own speed does not
+   change.
 
 ## Features
 
 - **Real line of sight.** Detection uses each nearby NPC's own vision cone (`VisionCone.IsPointWithinSight`),
   so it honors field of view and the game's occlusion layers. A hidden body is genuinely unseen.
 - **Killer attribution.** The heat goes to whoever actually did it, captured at attack time. Unknown
-  (environmental / NPC-vs-NPC) deaths fall back sensibly (single-player blames the local player; co-op
-  uses a scene response).
-- **Configurable realism.** Hunt the killer / Scene investigation / Escalating, line-of-sight on/off,
-  which NPC types react, pursuit level, reaction delay, cooldowns, weight, and more.
+  (environmental / NPC-vs-NPC) deaths are blamed on you in single-player, and on nobody in co-op.
+- **One arrest settles your spree.** After an arrest the bodies you left lying around are not reported
+  again. In co-op this is per player.
+- **Configurable realism.** Line of sight on/off, which NPC types react, sight range, pursuit level,
+  reaction delay, phone call or instant report, weight, and more.
 - **Cheap when idle.** With no corpses in the world the mod does effectively nothing; the witness scan is
   throttled and only runs while a body exists.
 - **Host-authoritative.** Detection and every police/pursuit write run only on the server/host through the
@@ -52,21 +60,26 @@ Editable in `UserData/MelonPreferences.cfg`
 | Setting | Default | Meaning |
 |---|---|---|
 | `Enabled` | on | Master switch. Off = fully vanilla. |
-| `EnableInMultiplayer` | off | Force the witness system on in co-op (experimental, host-authoritative). |
-| `RequireLineOfSight` | on | Use the NPC vision cone so hidden bodies are unseen. Off = pure radius. |
-| `ResponseMode` | 0 (Hunt) | 0 Hunt the killer (reliable), 1 Scene investigation (experimental), 2 Escalating. |
-| `PursuitLevel` | 1 | 1 Investigating, 2 Arresting, 3 NonLethal, 4 Lethal. |
-| `ReactionDelaySeconds` | 3 | Delay after the first sighting before the response fires. |
-| `OncePerCorpse` | on | Respond at most once per body. |
-| `CorpseWeightMultiplier` | 5 | How heavy a carried corpse feels (1 = vanilla, up to 20). |
+| `EnableInMultiplayer` | on | Witnesses also react in co-op. Only the host's value counts. |
+| `RequireLineOfSight` | on | Walls, dumpsters, buildings, water and cover hide a body. |
+| `BodySightRange` | 12 m | How far an NPC notices a body in their field of view. |
+| `NoticeRadius` | 6 m | An NPC this close notices a body in any direction. |
+| `ReactionDelaySeconds` | 3 | Delay after the first sighting before the witness reacts. |
+| `WitnessCallsPolice` | on | A citizen phones the police over about 4 s. Off = instant report. |
+| `PursuitLevel` | 1 | Instant report on a killer the witness saw: 1 Investigating, 2 Under arrest, 3 Wanted, 4 Wanted dead. |
+| `OncePerCorpse` | on | Report each body at most once. |
+| `CorpseWeightMultiplier` | 5 | How hard a dragged body resists (1 = vanilla, up to 20). |
 
-Plus `ReactCitizens`, `ReactPolice`, `ReactEmployees`, `DetectionRange`, `ScanIntervalSeconds`,
-`ResponseCooldownSeconds`, `WeightMode` and more - see the in-game settings for the full list.
+Plus `ReactCitizens`, `ReactPolice`, `ReactEmployees`, `ReactToKnockedOut`, `RequirePlayerAlsoSeen`,
+`ResponseCooldownSeconds` and `AttributeUnknownToLocalPlayer`.
 
 ## Multiplayer
 
-The witness system is host-authoritative and **off by default in a real co-op lobby**
-(`EnableInMultiplayer`) until it has been tested with two players. Set `EnableInMultiplayer = on` to opt in.
+The witness system is host-authoritative: the host runs it for every player, and only the host's
+`EnableInMultiplayer` counts.
+
+Updating from 1.1.1 keeps your old setting, which was off. Set `EnableInMultiplayer = true` in
+`UserData/MelonPreferences.cfg` to turn it on.
 
 ## License
 

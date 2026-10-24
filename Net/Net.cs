@@ -14,28 +14,25 @@ namespace LooseEnds.Networking
     ///
     ///   IsCoop    - "is this a real multi-human co-op session?" via the game's Lobby singleton
     ///               (Il2CppScheduleOne.Networking.Lobby : PersistentSingleton&lt;Lobby&gt;), IsInLobby && PlayerCount > 1.
-    ///               This gates the EnableInMultiplayer safety posture. KNOWN GAP (same as Trashville): Lobby is
+    ///               This gates the EnableInMultiplayer setting. KNOWN GAP (same as Trashville): Lobby is
     ///               Steam-matchmaking-driven, so a direct-UDP dedicated server (no Steam lobby) reads as not-coop.
     ///
-    /// All accessors are conservative: any failure returns the safe value (false).
+    /// All accessors are conservative: any failure returns the safe value (false) and is logged once.
     /// </summary>
     internal static class Net
     {
-        private static NetworkManager Nm
-        {
-            get { try { return InstanceFinder.NetworkManager; } catch { return null; } }
-        }
-
-        /// <summary>True if a FishNet server/client is active (covers both SP-host and MP).</summary>
-        internal static bool Online
-        {
-            get { var nm = Nm; try { return nm != null && (nm.IsServer || nm.IsClient); } catch { return false; } }
-        }
-
         /// <summary>True only on the write authority (the host/server). True in single-player.</summary>
         internal static bool IsServer
         {
-            get { var nm = Nm; try { return nm != null && nm.IsServer; } catch { return false; } }
+            get
+            {
+                try
+                {
+                    NetworkManager nm = InstanceFinder.NetworkManager;
+                    return nm != null && nm.IsServer;
+                }
+                catch (Exception e) { Core.Caught("net: read NetworkManager.IsServer", e); return false; }
+            }
         }
 
         /// <summary>True only in a real Steam co-op lobby with more than the local player.</summary>
@@ -44,16 +41,9 @@ namespace LooseEnds.Networking
             try
             {
                 Lobby lobby = PersistentSingleton<Lobby>.Instance;
-                if (lobby == null)
-                {
-                    return false;   // no lobby manager yet -> treat as single-player
-                }
-                return lobby.IsInLobby && lobby.PlayerCount > 1;
+                return lobby != null && lobby.IsInLobby && lobby.PlayerCount > 1;   // no lobby manager yet: single-player
             }
-            catch
-            {
-                return false;   // conservative: any failure -> assume single-player
-            }
+            catch (Exception e) { Core.Caught("net: read the Steam lobby", e); return false; }
         }
     }
 }
