@@ -31,9 +31,8 @@ response is.
 
 ## Requirements
 
-- MelonLoader (IL2CPP build of Schedule I)
-- [S1API](https://thunderstore.io) (Il2Cpp)
-  Without it the mod still works; settings live in `UserData/MelonPreferences.cfg` under `[LooseEnds_01_Main]`.
+- MelonLoader 0.7.3+ (IL2CPP build of Schedule I)
+- [S1API](https://thunderstore.io/c/schedule-i/p/ifBars/S1API_Forked/) (Il2Cpp). Loose Ends does not load without it.
 
 ## How it works
 
@@ -58,87 +57,82 @@ response is.
 - Killer attribution is captured at attack time (the game stores no "killer" on a corpse), so the heat goes to whoever
   actually did it; a knockout falls back to the recent attacker. If the killer is unknown (an environmental or
   NPC-vs-NPC death), single-player blames the local player so there is still a response; co-op falls back sensibly.
-- Getting arrested settles the whole spree: the killer registry is cleared and every tracked body is marked resolved,
-  so you are not re-arrested for each corpse you left lying around.
+- Getting arrested settles your spree: every body blamed on you (or on nobody) is marked resolved and a call still
+  ringing about it is dropped, so you are not arrested again for each corpse you left lying around. In co-op this is
+  per player: your friend's bodies stay open when you are arrested.
 - It is host-authoritative: detection and all police/pursuit writes run only on the server/host and use the game's own
-  networked calls, so they replicate to clients. In a real co-op lobby the system stays off until you opt in
-  (`EnableInMultiplayer`) and test it with two players.
+  networked calls, so they replicate to clients. In a co-op lobby only the host's `EnableInMultiplayer` counts.
 
 ## Settings (category `LooseEnds_01_Main`)
 
 **Master**
 - `Enabled` (true) - master switch.
-- `EnableInMultiplayer` (false) - keep off in real co-op until tested with 2 players.
+- `EnableInMultiplayer` (true) - witnesses also react in a co-op lobby. Only the host's value counts; the host runs
+  detection for every player. A config file from 1.1.1 or older keeps its old value (false).
 
 **Detection**
 - `ReactCitizens` (true), `ReactPolice` (true), `ReactEmployees` (false) - which NPC types can witness (your crew
   ignores bodies by default).
-- `RequireLineOfSight` (true) - use the vision cone (hidden bodies unseen). Off = pure radius (notices through walls).
-- `UseVisionConeRange` (true) - rely on the NPC's own sight range. Off = use `DetectionRange` as an explicit radius.
-- `DetectionRange` (12 m, range 3-40) - explicit notice radius used when `UseVisionConeRange` is off.
+- `RequireLineOfSight` (true) - walls, dumpsters, buildings, water and cover hide a body. Off = anyone in range notices
+  it, through walls too.
+- `BodySightRange` (12 m, range 4-30) - how far an NPC notices a body in their field of view. Capped below normal sight
+  range, because a body lying flat is far less conspicuous than a standing person. Only NPCs this close to a body are
+  checked at all.
+- `NoticeRadius` (6 m, range 2-15) - an NPC this close notices a body in any direction (NPCs never look down at their
+  feet). Cover still hides it.
 - `ReactionDelaySeconds` (3 s, range 0-30) - delay after the first sighting before the response fires.
-- `ObserverCullRadius` (25 m, range 5-60) - performance: only NPCs within this distance of a corpse are considered.
-- `BodySightRange` (12 m, range 4-30) - how far an NPC can notice a body through their vision cone. Capped below normal
-  sight range, because a body lying flat is far less conspicuous than a standing person - otherwise a corpse in the
-  open is spotted instantly by anyone nearby.
-- `NoticeRadius` (6 m, range 2-15) - close-range notice radius. Any living NPC this close with a clear line of sight
-  notices a body even though it is below their forward cone (line of sight still respected, so hidden stays hidden).
-- `ScanIntervalSeconds` (0.4 s, range 0.1-2), `MaxRaycastsPerScan` (64, range 8-256) - scan cadence + per-tick cap.
-- `ReactToKnockedOut` (false) - also react to merely unconscious NPCs (not just dead ones).
+- `ReactToKnockedOut` (false) - also react to knocked-out NPCs, not only dead ones. A knocked-out witness stays silenced.
 
 **Response (the "realism" dial)**
-- `WitnessCallsPolice` (true) - a civilian witness pulls out their phone and calls over the game's own ~4 s window
-  (visible progress icon); silence them before it connects to stop it. Off = police are alerted instantly. A police
-  officer always reports instantly regardless.
-- `RequirePlayerAlsoSeen` (false) - off: seeing the body is enough (hiding yourself is not enough, you must hide the
-  body). On: the witness must also have you in sight before heat is applied (closer to vanilla crime-witnessing).
-- `PursuitLevel` (1, range 1-4) - level to apply: 1 = Investigating, 2 = Arresting, 3 = NonLethal, 4 = Lethal.
-- `OncePerCorpse` (true) - respond only once per corpse. Off = re-trigger allowed, subject to the cooldown below.
-- `ResponseCooldownSeconds` (60 s, range 5-600) - per-corpse re-trigger gap, used only when `OncePerCorpse` is off. It
-  does not throttle different bodies - every body a witness sees gets its own response.
-- `AttributeUnknownToLocalPlayer` (true) - in single-player, blame the local player for an unattributed body so the
-  investigation still has a suspect. Treated as off in co-op.
+- `WitnessCallsPolice` (true) - a civilian witness calls over the game's own ~4 s window (visible progress icon);
+  silence them before it connects to stop it. Off = police are alerted instantly. A police officer always reports
+  instantly.
+- `RequirePlayerAlsoSeen` (false) - on: the witness must also see the killer. Off: seeing the body is enough (hiding
+  yourself is not enough, you must hide the body).
+- `PursuitLevel` (1, range 1-4) - 1 Investigating, 2 Under arrest, 3 Wanted, 4 Wanted dead.
+- `OncePerCorpse` (true) - report each body at most once. Off = it can be reported again after the cooldown below.
+- `ResponseCooldownSeconds` (60 s, range 5-600) - per-body re-report gap, used only when `OncePerCorpse` is off. It
+  does not throttle different bodies.
+- `AttributeUnknownToLocalPlayer` (true) - single-player only: a body nobody killed (lightning, an NPC fight) is blamed
+  on you, so the investigation still has a suspect.
 
 **Weight**
-- `CorpseWeightMultiplier` (5, range 1-20) - how heavy a dragged body (dead or knocked-out) feels to pull. Higher = the
-  body resists more: it lags behind the carry point, drags sluggishly, and is heavier to throw. 1 = vanilla. It does
-  not slow the player.
+- `CorpseWeightMultiplier` (5, range 1-20) - how hard a dragged body (dead or knocked out) resists being pulled and
+  thrown. 1 = vanilla. It does not slow the player.
 
 ## Building
 
 ```
-dotnet build -c Debug     # dev build: includes config probes + verbose logging, auto-copies to the game Mods folder
+dotnet build -c Debug     # dev build: the 'le' console command, verbose logging, Snitch panel
 dotnet build -c Release   # release build: all dev surface compiled out
 ```
 
-The post-build step copies the DLL to `Mods/` (path set by `ModsDirectory` in the csproj).
+In the DooDesch workspace a build deploys only into the test slot of the session's lease (`Directory.Build.targets`).
 
 ## Verifying in-game
 
-A few behaviours are best confirmed live in your own save. Build **Debug**, load a save, then:
+Build **Debug**, load a save, open the dev console. Every `le` answer goes to the MelonLoader log.
 
-1. **It loads cleanly.** Check the MelonLoader log for `Loose Ends v1.1.1` and `[Core] Witness system ACTIVE`
-   (the latter appears once you are in a save on the host). No errors.
-2. **Make a corpse.** Open the dev console and run `triggerlightning <npc_id>` (e.g. `triggerlightning cranky_frank`)
-   to kill an NPC, or kill one yourself. The log should show `[Killer] NPC died ...` and `[Corpse] tracked new corpse`.
-3. **Witnessing (open).** With the body in the open near other NPCs, the log should show
-   `[Witness] corpse N SEEN by observer M`, then `[Reaction] witness ... CALLING police ...`. The civilian pulls out
-   their phone; once the ~4 s call connects the log shows `[Reaction] call CONNECTED ...`, your pursuit shows
-   **Investigating**, and officers head to the scene.
-4. **Silence the witness.** Knock out or kill the calling witness before the ~4 s window elapses - the log should show
-   `[Reaction] witness SILENCED before the call connected ...` and no police are called. (Build Debug and press F8 to
-   get a weapon arsenal for this.)
-5. **Hidden body.** Put a body in a dumpster / indoors / underwater / behind cover near the same NPCs. With
-   `RequireLineOfSight` on it should NOT be seen and NOT trigger - this is the core mechanic.
-6. **Weight.** Drag the body. It should clearly resist being pulled (lagging behind, heavy to throw) without slowing
-   your own movement, and return to normal when dropped (`[Weight] drag start ...`).
-7. **Deterministic dispatch test.** Toggle the Debug config button `ForceDiscoverNearest` to immediately run the
-   response on the nearest corpse, bypassing line-of-sight and the delay.
+1. **It loads cleanly.** The log shows `Loose Ends v...`, `[Config] Loaded: ...` and, once in a save on the host,
+   `[Core] Witness system ACTIVE`.
+2. **Make a body.** `le kill` kills the living NPC nearest you (`le ko` knocks it out). The log shows
+   `[Killer] ... died` and `[Corpse] tracked ...`.
+3. **Witnessing (open).** With the body in the open near other NPCs, the log shows `[Witness] ... SEEN ...`, then
+   `[Reaction] ... CALLING police ...`. Once the call connects your pursuit shows **Investigating** and officers head
+   to the scene.
+4. **Silence the witness.** `le arsenal` gives you weapons. Knock out or kill the calling witness inside the ~4 s
+   window (or run `le silence`): the log shows `[Reaction] witness SILENCED ...` and that witness never calls.
+5. **Hidden body.** A body in a dumpster, indoors, underwater or behind cover is not seen.
+6. **Weight.** Drag the body: it lags behind and is heavy to throw, your speed stays the same. `le drag` / `le drop`
+   pick up and drop the nearest body and log the `[Weight]` values.
+7. **Arrest.** `le arrest` arrests you: the log shows `[Arrest] ... settled N bodies`.
 
-Tuning knobs to confirm against your save: `ScanIntervalSeconds`, `BodySightRange`, `NoticeRadius`, and `PursuitLevel`.
+More: `le status` (bodies and their state), `le find` (start the response on the nearest body, no sight or delay),
+`le scanlog on|off`, `le pursuit 0-4` (0 = the setting), `le mp on|off` (witnesses in co-op without the setting).
 
 ## Status / known limitations
 
-- **Multiplayer** is host-authoritative and off by default in co-op (`EnableInMultiplayer`) until a 2-player live test.
+- **Multiplayer** is host-authoritative and on by default in co-op (`EnableInMultiplayer`). Tested with two local
+  instances, not yet with two players on separate machines.
 - Killer attribution covers player-inflicted deaths; environmental / NPC-vs-NPC deaths are still detected as bodies but
   have no player to blame (single-player can fall back to the local player; co-op falls back to no attribution).

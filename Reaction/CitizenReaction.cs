@@ -15,48 +15,35 @@ namespace LooseEnds.Reaction
     /// </summary>
     internal static class CitizenReaction
     {
-        /// <summary>Cosmetic-only witness reaction. Does not dispatch.</summary>
+        /// <summary>Cosmetic-only witness reaction for the instant path. Does not dispatch.</summary>
         internal static void React(NPC discoverer, Vector3 bodyPos)
         {
             if (discoverer == null) return;
 
-            // Alerted voice line for everyone who witnesses the body.
-            Vo(discoverer, EVOLineType.Alerted);
+            Alert(discoverer);
 
-            bool isPolice = false;
-            bool isEmployee = false;
-            try { isPolice = discoverer.TryCast<PoliceOfficer>() != null; } catch { }
-            try { isEmployee = discoverer.TryCast<Employee>() != null; } catch { }
-            bool isCivilian = !isPolice && !isEmployee;
+            bool civilian;
+            try { civilian = discoverer.TryCast<PoliceOfficer>() == null && discoverer.TryCast<Employee>() == null; }
+            catch (Exception e) { Core.Caught("reaction: witness role", e); return; }
+            if (!civilian) return;
 
-            // A civilian stops and turns to face the body (no fleeing, no dispatch). Police/employees just alert.
-            if (isCivilian)
+            // A civilian stops and turns to face the body (no fleeing, no dispatch).
+            try
             {
-                try
-                {
-                    NPCMovement mv = discoverer.Movement;
-                    if (mv != null)
-                    {
-                        Vector3 forward = (bodyPos - discoverer.transform.position);
-                        forward.y = 0f;
-                        if (forward.sqrMagnitude > 0.0001f)
-                            mv.FaceDirection(forward.normalized);
-                    }
-                }
-                catch (Exception e) { Core.Log?.Warning("[Reaction] face-body failed: " + e.Message); }
+                NPCMovement mv = discoverer.Movement;
+                Vector3 forward = bodyPos - discoverer.transform.position;
+                forward.y = 0f;
+                if (mv != null && forward.sqrMagnitude > 0.0001f) mv.FaceDirection(forward.normalized);
             }
+            catch (Exception e) { Core.Caught("reaction: witness faces the body", e); }
         }
 
-        /// <summary>Just the alerted gasp - used when the native call behaviour will drive the rest (phone + facing).</summary>
+        /// <summary>Just the alerted gasp - used when the native call behaviour drives the rest (phone + facing).</summary>
         internal static void Alert(NPC npc)
         {
             if (npc == null) return;
-            Vo(npc, EVOLineType.Alerted);
-        }
-
-        private static void Vo(NPC npc, EVOLineType type)
-        {
-            try { npc.PlayVO(type, false); } catch { }
+            try { npc.PlayVO(EVOLineType.Alerted, false); }
+            catch (Exception e) { Core.Caught("reaction: alerted voice line", e); }
         }
     }
 }

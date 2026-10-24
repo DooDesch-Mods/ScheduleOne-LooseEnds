@@ -24,6 +24,10 @@ namespace LooseEnds.Detection
         /// <summary>The police response has fired for this body.</summary>
         public bool Dispatched;
         public float DispatchedTime;
+        /// <summary>The killer was arrested; this body never raises a response again, whatever the cooldown setting.</summary>
+        public bool Settled;
+        /// <summary>Why the response is still waiting, so each reason is logged once instead of every tick.</summary>
+        public string WaitReason;
 
         // ----- call state (witness phoning the police: native CallPoliceBehaviour, interruptible 4s window) -----
         /// <summary>The discoverer is on the phone calling the police; silence them before it connects to stop it.</summary>

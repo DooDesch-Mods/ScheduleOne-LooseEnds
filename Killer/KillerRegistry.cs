@@ -7,7 +7,7 @@ namespace LooseEnds.Killer
     /// Tracks which Player killed each NPC. The game keeps no "killer" field on a corpse, so we capture it at attack
     /// time: NPCHealth.NotifyAttackedByPlayer(Player) records the most recent attacker per NPC, and NPCHealth.Die()
     /// resolves that into a confirmed killer. Keyed by the NPC's Unity instance id (stable for the object's life).
-    /// In-memory only - cleared on save / scene change so attribution never leaks across saves. The player's own
+    /// In-memory only - cleared on save / scene change so attribution never leaks across saves. The players' own
     /// crime/pursuit state is persisted by the game, not by us.
     /// </summary>
     internal static class KillerRegistry
@@ -19,6 +19,7 @@ namespace LooseEnds.Killer
 
         private static readonly Dictionary<int, Attack> _lastAttacker = new Dictionary<int, Attack>();
         private static readonly Dictionary<int, Player> _killer = new Dictionary<int, Player>();
+        private static readonly List<int> _scratch = new List<int>();
 
         /// <summary>Called from the NotifyAttackedByPlayer postfix: remember the most recent player attacker.</summary>
         internal static void RecordAttacker(NPC npc, Player player)
@@ -62,18 +63,47 @@ namespace LooseEnds.Killer
             return null;
         }
 
-        /// <summary>Drop all attribution for an NPC (revived / despawned).</summary>
-        internal static void Forget(NPC npc)
-        {
-            if (npc == null) return;
-            ForgetId(npc.GetInstanceID());
-        }
-
-        /// <summary>Drop attribution by instance id (used when the NPC object is already gone).</summary>
+        /// <summary>Drop attribution by instance id (revived / despawned NPC).</summary>
         internal static void ForgetId(int id)
         {
             _lastAttacker.Remove(id);
             _killer.Remove(id);
+        }
+
+        /// <summary>Drop every attribution to one player (they were arrested). Returns how many entries were removed.</summary>
+        internal static int ClearFor(Player player)
+        {
+            if (player == null) return 0;
+            int pid = player.GetInstanceID();
+            int removed = 0;
+
+            _scratch.Clear();
+            foreach (KeyValuePair<int, Player> kv in _killer)
+                if (kv.Value == null || kv.Value.GetInstanceID() == pid) _scratch.Add(kv.Key);
+            for (int i = 0; i < _scratch.Count; i++) _killer.Remove(_scratch[i]);
+            removed += _scratch.Count;
+
+            _scratch.Clear();
+            foreach (KeyValuePair<int, Attack> kv in _lastAttacker)
+                if (kv.Value.Player == null || kv.Value.Player.GetInstanceID() == pid) _scratch.Add(kv.Key);
+            for (int i = 0; i < _scratch.Count; i++) _lastAttacker.Remove(_scratch[i]);
+            removed += _scratch.Count;
+
+            return removed;
+        }
+
+        /// <summary>
+        /// Drop attacks that are too old to count and never became a kill. Without this every NPC the player ever
+        /// punched stays in the map until the next save change. Called from the corpse reconcile.
+        /// </summary>
+        internal static void PruneStale()
+        {
+            if (_lastAttacker.Count == 0) return;
+            float now = Time.time;
+            _scratch.Clear();
+            foreach (KeyValuePair<int, Attack> kv in _lastAttacker)
+                if (now - kv.Value.Time > AttributionWindowSeconds && !_killer.ContainsKey(kv.Key)) _scratch.Add(kv.Key);
+            for (int i = 0; i < _scratch.Count; i++) _lastAttacker.Remove(_scratch[i]);
         }
 
         /// <summary>Wipe everything (save / scene change).</summary>

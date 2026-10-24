@@ -1,3 +1,4 @@
+using System;
 using HarmonyLib;
 using LooseEnds.Config;
 using LooseEnds.Killer;
@@ -7,16 +8,16 @@ namespace LooseEnds.Patches
     /// <summary>
     /// Captures killer attribution from the NPC health system. NotifyAttackedByPlayer fires whenever a player damages
     /// an NPC (the uniform hook across civilians / police / employees and all attack types), so we remember the most
-    /// recent attacker; Die() promotes that to the confirmed killer. These postfixes are read-only (they only record
-    /// a Player reference) and therefore safe on every peer - only the host later acts on the data.
+    /// recent attacker; Die() promotes that to the confirmed killer. These postfixes only record references and are
+    /// therefore safe on every peer - only the host later acts on the data.
     /// </summary>
     [HarmonyPatch(typeof(NPCHealth), nameof(NPCHealth.NotifyAttackedByPlayer))]
     internal static class NPCHealth_NotifyAttackedByPlayer_Patch
     {
         private static void Postfix(NPCHealth __instance, Player player)
         {
-            try { KillerRegistry.RecordAttacker(__instance.npc, player); }
-            catch { /* attribution is best-effort */ }
+            try { KillerRegistry.RecordAttacker(__instance._npc, player); }
+            catch (Exception e) { Core.Failed("patch NPCHealth.NotifyAttackedByPlayer (attacker attribution)", e); }
         }
     }
 
@@ -27,16 +28,18 @@ namespace LooseEnds.Patches
         {
             try
             {
-                NPC npc = __instance.npc;
-                if (npc == null) return;
+                NPC npc = __instance._npc;
+                if (npc == null)
+                {
+                    Core.Log?.Warning("[Killer] NPCHealth.Die on a health component without an NPC - body not tracked.");
+                    return;
+                }
+                if (!__instance.IsDead) return;   // invincible NPCs return from Die without dying
                 Player killer = KillerRegistry.RecordKill(npc);
-                // CorpseTracker.OnNpcDied(npc) is wired in Step 3 to register the corpse immediately.
                 Detection.CorpseTracker.OnNpcDied(npc, killer);
-#if DEBUG
-                Core.LogDebug($"[Killer] NPC died id={npc.GetInstanceID()} killer={(killer != null ? killer.PlayerCode : "unknown")}");
-#endif
+                Core.Log?.Msg($"[Killer] {Reaction.ReactionDispatcher.SafeName(npc)} died, killer={Reaction.ReactionDispatcher.SafeCode(killer)}.");
             }
-            catch { /* best-effort */ }
+            catch (Exception e) { Core.Failed("patch NPCHealth.Die (track the body)", e); }
         }
     }
 
@@ -53,16 +56,14 @@ namespace LooseEnds.Patches
         {
             try
             {
-                if (!Preferences.ReactToKnockedOut) return;
-                NPC npc = __instance.npc;
-                if (npc == null) return;
-                Detection.CorpseTracker.OnNpcDied(npc, KillerRegistry.GetKiller(npc));
-#if DEBUG
-                Player k = KillerRegistry.GetKiller(npc);
-                Core.LogDebug($"[Killer] NPC knocked out id={npc.GetInstanceID()} killer={(k != null ? k.PlayerCode : "unknown")}");
-#endif
+                if (!Preferences.ReactToKnockedOut) return;   // KOs are not witnessed with the default settings
+                NPC npc = __instance._npc;
+                if (npc == null || !__instance.IsKnockedOut) return;
+                Player killer = KillerRegistry.GetKiller(npc);
+                Detection.CorpseTracker.OnNpcDied(npc, killer);
+                Core.Log?.Msg($"[Killer] {Reaction.ReactionDispatcher.SafeName(npc)} knocked out, attacker={Reaction.ReactionDispatcher.SafeCode(killer)}.");
             }
-            catch { /* best-effort */ }
+            catch (Exception e) { Core.Failed("patch NPCHealth.KnockOut (track the body)", e); }
         }
     }
 }

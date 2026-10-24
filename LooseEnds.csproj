@@ -78,9 +78,9 @@
   </ItemGroup>
 
   <!--
-    Release hardening note: all dev-only surface (the config probe entries, the force-discover helper, verbose scan
-    logging, LogDebug traces) lives inline behind #if DEBUG, so the Release compiler strips it automatically. There
-    are no separate dev-only source files to exclude.
+    Release hardening note: all dev-only surface (the 'le' console command, the arsenal, DevOverrides, verbose scan
+    logging) sits behind #if DEBUG, and the Snitch probe behind #if SNITCH, so the Release compiler strips it.
+    There are no separate dev-only source files to exclude.
   -->
 
   <!-- Mod loader references (both backends) -->
