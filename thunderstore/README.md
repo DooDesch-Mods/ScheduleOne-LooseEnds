@@ -13,7 +13,7 @@
 ![S1API](https://img.shields.io/badge/S1API-required-orange)
 [![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
 
-[![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi/badge.svg)](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi)
+[![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_Ue4y9faLLmbfD7f5y6qc18NH/badge.svg)](https://mlvscan.com/attestations/att_Ue4y9faLLmbfD7f5y6qc18NH)
 
 ![A witness phones the police, officers walk to the body](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/header.jpg)
 
