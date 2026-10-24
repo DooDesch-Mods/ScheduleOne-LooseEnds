@@ -8,6 +8,8 @@ A MelonLoader (IL2CPP) mod for **Schedule I** that makes dead bodies actually ma
 
 [![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi/badge.svg)](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi)
 
+![A witness phones the police, officers walk to the body](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/header.jpg)
+
 📖 **Documentation:** [docs.doodesch.de/mods/looseends/](https://docs.doodesch.de/mods/looseends/)
 
 In vanilla, police and citizens walk over a corpse like it isn't there, and a body drags around as if it weighs as
@@ -32,6 +34,13 @@ much as a plastic bag. Loose Ends fixes both:
 
 Everything is configurable in `UserData/MelonPreferences.cfg`, including how punishing the police
 response is.
+
+## Screenshots
+
+| The witness | The search |
+|---|---|
+| ![A witness on the phone, the body lies in the bushes](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/call.jpg) | ![Two officers walk to the body at dusk](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/search.jpg) |
+| ![A witness calls the police](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/phone.jpg) | ![Two bodies left on the sidewalk](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/left-behind.jpg) |
 
 ## Requirements
 
@@ -153,3 +162,5 @@ More: `le status` (bodies and their state), `le find` (start the response on the
   instances, not yet with two players on separate machines.
 - Killer attribution covers player-inflicted deaths; environmental / NPC-vs-NPC deaths are still detected as bodies but
   have no player to blame (single-player can fall back to the local player; co-op falls back to no attribution).
+
+This mod is written with help from generative AI tools (Anthropic Claude, OpenAI Codex).
