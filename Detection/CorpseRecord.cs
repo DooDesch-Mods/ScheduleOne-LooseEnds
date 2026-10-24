@@ -21,6 +21,11 @@ namespace LooseEnds.Detection
         public float FirstSeenTime;
         /// <summary>The NPC that first saw the body.</summary>
         public NPC Discoverer;
+        /// <summary>
+        /// The witness also saw the killer, at discovery or when the response started. Decides the response: with a
+        /// description the killer becomes the suspect, without one the police only search the scene.
+        /// </summary>
+        public bool KillerSeen;
         /// <summary>The police response has fired for this body.</summary>
         public bool Dispatched;
         public float DispatchedTime;
@@ -41,5 +46,7 @@ namespace LooseEnds.Detection
         public Player CallKiller;
         /// <summary>Where the body rested when the call started - officers are redirected here once the call connects.</summary>
         public Vector3 ScenePos;
+        /// <summary>The mod ended a scene-only call itself, just before the game would have marked the killer wanted.</summary>
+        public bool ConnectedByMod;
     }
 }

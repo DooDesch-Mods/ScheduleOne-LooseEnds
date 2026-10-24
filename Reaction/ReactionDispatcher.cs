@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Il2CppScheduleOne.Law;             // LawManager, DeadlyAssault
 using Il2CppScheduleOne.Vision;          // VisionCone
 using Il2CppScheduleOne.Police;          // PoliceOfficer
@@ -13,18 +14,18 @@ using Snitch.Api;                 // Profiler.Log -> the "LooseEnds" panel log c
 namespace LooseEnds.Reaction
 {
     /// <summary>
-    /// Turns a discovered corpse into a police response. The default flow mirrors how the game already handles a
-    /// witnessed crime: a civilian witness pulls out their phone and CALLS the police over the game's own ~4s call
-    /// window (native <see cref="CallPoliceBehaviour"/>, with a progress icon over their head). The player can knock the
-    /// witness out or kill them before the call connects to stop it. A witness reacts to EVERY body they see - even if
-    /// the player is already wanted - the call just refreshes the pursuit and redirects officers to THAT body. When the
-    /// call connects, the game raises the suspect to "Investigating" and dispatches officers; we redirect those officers
-    /// to the SCENE (the body) rather than the player's live position.
+    /// Turns a discovered corpse into a police response. A civilian witness pulls out their phone and CALLS the police
+    /// over the game's own ~4s call window (native <see cref="CallPoliceBehaviour"/>, with a progress icon over their
+    /// head). The player can knock the witness out or kill them before the call connects to stop it. What a connected
+    /// call does depends on what the witness saw:
+    /// - the killer too (<see cref="CorpseRecord.KillerSeen"/>): the game's call finishes as usual and the killer becomes
+    ///   the suspect (Investigating); the witness remembers them until the next day (<see cref="WitnessMemory"/>).
+    /// - only the body: the mod ends the call itself before the game would mark anyone, and officers search the scene
+    ///   (<see cref="SceneSearch"/>); a player they see close to the body becomes the suspect.
     ///
     /// A police officer who finds a body reports it instantly (you cannot phone-block a cop), as does the instant path
-    /// when "Witness phones the police" is off. There is no global throttle: each body triggers its own response once
-    /// (OncePerCorpse), so a body left in front of someone is never silently ignored. All writes assume the caller
-    /// gated on the server/host.
+    /// when "Witness phones the police" is off; the same two cases apply. Each body triggers its own response once
+    /// (OncePerCorpse). All writes assume the caller gated on the server/host.
     /// </summary>
     internal static class ReactionDispatcher
     {
@@ -32,6 +33,9 @@ namespace LooseEnds.Reaction
         private const float CallTimeoutSeconds = 25f;  // safety net: generous enough for a panicking witness (~15s) to settle then connect
         private const float CallActivationGrace = 1.5f; // after Enable, how long to wait for the call to actually run
         private const float CallRetryBackoff = 2f;     // after a stalled attempt, wait this long before retrying
+
+        // Running calls whose witness did not see the killer, by CallPoliceBehaviour instance id.
+        private static readonly Dictionary<int, CorpseRecord> _sceneOnlyCalls = new Dictionary<int, CorpseRecord>();
 
         /// <summary>
         /// A corpse's reaction delay has elapsed: begin the response. Either starts an interruptible phone call (civilian
@@ -65,7 +69,19 @@ namespace LooseEnds.Reaction
                 return;
             }
 
-            if (Preferences.RequirePlayerAlsoSeen && !DiscovererSees(rec.Discoverer, killer))
+            if (!rec.KillerSeen && WitnessSeesKiller(rec.Discoverer, killer))
+            {
+                rec.KillerSeen = true;
+                Core.Log?.Msg($"[Reaction] corpse={rec.Id}: witness {SafeName(rec.Discoverer)} now also sees {SafeCode(killer)}.");
+            }
+#if DEBUG
+            if (DevOverrides.ForceKillerUnseen && rec.KillerSeen)
+            {
+                rec.KillerSeen = false;
+                Core.Log?.Msg($"[Dev] corpse={rec.Id}: killer treated as unseen.");
+            }
+#endif
+            if (Preferences.RequirePlayerAlsoSeen && !rec.KillerSeen)
             {
                 Wait(rec, "the witness does not see the killer yet");
                 return;
@@ -86,11 +102,45 @@ namespace LooseEnds.Reaction
                 Core.Log?.Warning($"[Reaction] corpse={rec.Id}: the witness cannot phone - police alerted at once instead.");
             }
 
-            // Instant path: visible reaction + immediate on-scene dispatch (police witness / call window off / fallback).
+            // Instant path: visible reaction + immediate response (police witness / call window off / fallback).
             CitizenReaction.React(rec.Discoverer, bodyPos);
-            DispatchToScene(rec, killer, bodyPos);
+            int officers = SceneSearch.CountReport();
+            if (rec.KillerSeen) DispatchToScene(rec, killer, bodyPos);
+            else SceneSearch.Start(rec, bodyPos, officers);
             rec.Dispatched = true;
             rec.DispatchedTime = now;
+        }
+
+        /// <summary>The record of a running call whose witness did not see the killer, or null (Harmony patch, host).</summary>
+        internal static CorpseRecord SceneOnlyCall(CallPoliceBehaviour cpb)
+        {
+            if (_sceneOnlyCalls.Count == 0 || cpb == null) return null;
+            if (!_sceneOnlyCalls.TryGetValue(cpb.GetInstanceID(), out CorpseRecord rec)) return null;
+            return rec.Calling && !rec.ConnectedByMod ? rec : null;
+        }
+
+        /// <summary>
+        /// The scene-only call reached its last frame: hang up before the game's FinalizeCall marks the killer. The next
+        /// <see cref="UpdateCall"/> sends the scene search.
+        /// </summary>
+        internal static void EndSceneOnlyCall(CorpseRecord rec, CallPoliceBehaviour cpb)
+        {
+            _sceneOnlyCalls.Remove(cpb.GetInstanceID());
+            rec.ConnectedByMod = true;
+            rec.CallWasActive = true;
+            try { cpb.Disable_Networked(null); }
+            catch (Exception e) { Core.Failed("reaction: hang up a scene-only call", e); }
+        }
+
+        private static void ForgetSceneOnlyCall(NPC witness)
+        {
+            if (_sceneOnlyCalls.Count == 0 || witness == null) return;
+            try
+            {
+                CallPoliceBehaviour cpb = witness.Behaviour?.CallPoliceBehaviour;
+                if (cpb != null) _sceneOnlyCalls.Remove(cpb.GetInstanceID());
+            }
+            catch (Exception e) { Core.Caught("reaction: forget a scene-only call", e); }
         }
 
         /// <summary>Log once per body why its response waits; the check repeats every scan tick.</summary>
@@ -127,15 +177,19 @@ namespace LooseEnds.Reaction
                 CitizenReaction.Alert(witness);   // quick alerted gasp; the behaviour drives the phone + facing
 
                 cpb.ReportedCrime = new DeadlyAssault();
-                cpb.Target = killer;
+                cpb.Target = killer;   // the game's call needs a player; a scene-only call never reaches FinalizeCall
                 cpb.Enable_Networked();
 
                 rec.Calling = true;
                 rec.CallStartTime = now;
                 rec.CallWasActive = false;
+                rec.ConnectedByMod = false;
                 rec.CallKiller = killer;
                 rec.ScenePos = bodyPos;
-                Core.Log?.Msg($"[Reaction] witness {SafeName(witness)} CALLING police on {SafeCode(killer)} for corpse={rec.Id} - {CallWindowSeconds:F0}s window.");
+                if (!rec.KillerSeen) _sceneOnlyCalls[cpb.GetInstanceID()] = rec;
+                Core.Log?.Msg($"[Reaction] witness {SafeName(witness)} CALLING police for corpse={rec.Id} - " +
+                              (rec.KillerSeen ? $"describes {SafeCode(killer)}" : "killer unknown, reports the body") +
+                              $" - {CallWindowSeconds:F0}s window.");
 #if SNITCH
                 Profiler.Log("LooseEnds", $"CALLING police on {SafeCode(killer)} for corpse={rec.Id} ({CallWindowSeconds:F0}s window).");
 #endif
@@ -171,21 +225,35 @@ namespace LooseEnds.Reaction
             // when the witness is killed/downed mid-call the death disables the behaviour too, and without the gate that
             // would read as a finalised call and falsely dispatch. Requiring age >= the call window means only a call
             // that actually lasted the ~4s (i.e. genuinely connected) counts.
-            if (rec.CallWasActive && !enabled && age >= CallWindowSeconds)
+            if (rec.ConnectedByMod || (rec.CallWasActive && !enabled && age >= CallWindowSeconds))
             {
-                try
-                {
-                    PlayerCrimeData cd = rec.CallKiller != null ? rec.CallKiller.CrimeData : null;
-                    if (cd != null) cd.LastKnownPosition = rec.ScenePos;
-                    else Core.Log?.Warning($"[Reaction] corpse={rec.Id}: suspect has no CrimeData - officers go to the suspect, not the scene.");
-                }
-                catch (Exception e) { Core.Failed("reaction: redirect officers to the scene", e); }
                 rec.Calling = false;
                 rec.Dispatched = true;
                 rec.DispatchedTime = now;
-                Core.Log?.Msg($"[Reaction] call CONNECTED for corpse={rec.Id} - officers sent to the scene ({rec.ScenePos.x:F1},{rec.ScenePos.y:F1},{rec.ScenePos.z:F1}).");
+                int officers = SceneSearch.CountReport();
+                if (rec.ConnectedByMod)
+                {
+                    Core.Log?.Msg($"[Reaction] call CONNECTED for corpse={rec.Id} - body reported, killer unknown.");
+                    SceneSearch.Start(rec, rec.ScenePos, officers);
+                }
+                else
+                {
+                    if (!rec.KillerSeen)
+                        Core.Log?.Warning($"[Reaction] corpse={rec.Id}: the game finished a scene-only call - {SafeCode(rec.CallKiller)} was marked anyway.");
+                    ForgetSceneOnlyCall(witness);
+                    try
+                    {
+                        PlayerCrimeData cd = rec.CallKiller != null ? rec.CallKiller.CrimeData : null;
+                        if (cd != null) cd.LastKnownPosition = rec.ScenePos;   // patrol cars head to the scene first
+                        else Core.Log?.Warning($"[Reaction] corpse={rec.Id}: suspect has no CrimeData - officers go to the suspect, not the scene.");
+                    }
+                    catch (Exception e) { Core.Failed("reaction: point the patrol cars at the scene", e); }
+                    Core.Log?.Msg($"[Reaction] call CONNECTED for corpse={rec.Id} - {SafeCode(rec.CallKiller)} is the suspect (Investigating), " +
+                                  $"scene ({rec.ScenePos.x:F1},{rec.ScenePos.y:F1},{rec.ScenePos.z:F1}).");
+                    if (rec.KillerSeen) WitnessMemory.Remember(witness, rec.CallKiller);
+                }
 #if SNITCH
-                Profiler.Log("LooseEnds", $"call CONNECTED for corpse={rec.Id} - officers sent to the scene.");
+                Profiler.Log("LooseEnds", $"call CONNECTED for corpse={rec.Id} ({(rec.ConnectedByMod ? "scene search" : "suspect")}).");
 #endif
                 return;
             }
@@ -249,11 +317,13 @@ namespace LooseEnds.Reaction
         {
             foreach (CorpseRecord rec in CorpseTracker.Records)
                 if (rec.Calling) AbortCall(rec, "state reset");
+            _sceneOnlyCalls.Clear();
         }
 
         private static void CancelCall(NPC witness)
         {
             if (witness == null) return;   // the witness object is gone, and its call with it
+            ForgetSceneOnlyCall(witness);
             try
             {
                 CallPoliceBehaviour cpb = witness.Behaviour?.CallPoliceBehaviour;
@@ -365,7 +435,7 @@ namespace LooseEnds.Reaction
         }
 
         /// <summary>True if the witness can see the killer right now (their own vision cone, the game's player check).</summary>
-        private static bool DiscovererSees(NPC discoverer, Player killer)
+        internal static bool WitnessSeesKiller(NPC discoverer, Player killer)
         {
             if (discoverer == null || killer == null) return false;
             try

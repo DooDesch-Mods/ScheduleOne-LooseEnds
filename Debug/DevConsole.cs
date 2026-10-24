@@ -19,7 +19,7 @@ namespace LooseEnds.Debugging
     internal static class DevConsole
     {
         private const string Usage =
-            "le status | le kill [other] | le ko [other] | le silence | le find | le drag | le drop | le arrest [other] | le arsenal | le scanlog on|off | le pursuit 0-4 | le mp on|off";
+            "le status | le kill [other] | le ko [other] | le silence | le find | le drag | le drop | le arrest [other] | le arsenal | le scanlog on|off | le pursuit 0-4 | le mp on|off | le unseen on|off | le busy on|off";
 
         private static int _lastFrame = -1;
         private static string _lastSig = "";
@@ -70,6 +70,14 @@ namespace LooseEnds.Debugging
                     case "mp":
                         DevOverrides.ForceEnableInMultiplayer = arg != "off";
                         Core.Log?.Msg($"[Dev] witness system in co-op {(DevOverrides.ForceEnableInMultiplayer ? "forced on" : "back to the setting")}.");
+                        break;
+                    case "unseen":
+                        DevOverrides.ForceKillerUnseen = arg != "off";
+                        Core.Log?.Msg($"[Dev] witnesses {(DevOverrides.ForceKillerUnseen ? "never see the killer (scene search)" : "back to their own eyes")}.");
+                        break;
+                    case "busy":
+                        DevOverrides.ForceStationBusy = arg != "off";
+                        Core.Log?.Msg($"[Dev] police station {(DevOverrides.ForceStationBusy ? "reports no free officer" : "back to its real pool")}.");
                         break;
                     case "pursuit":
                         if (int.TryParse(arg, out int lvl) && lvl >= 0 && lvl <= 4)
@@ -130,13 +138,15 @@ namespace LooseEnds.Debugging
             if (local != null && local.CrimeData != null) pursuit = local.CrimeData.CurrentPursuitLevel.ToString();
             Core.Log?.Msg($"[Dev] active={Core.WitnessStatus} server={Net.IsServer} coop={Net.IsCoop()} bodies={CorpseTracker.Count}"
                 + $" discovered={discovered} calling={calling} dispatched={dispatched} settled={settled}"
-                + $" carried={CorpseWeight.ActiveCount} checks={SightingScanner.LastChecks} pursuit={pursuit}");
+                + $" carried={CorpseWeight.ActiveCount} checks={SightingScanner.LastChecks} pursuit={pursuit}"
+                + $" searches={SceneSearch.ActiveCount} waiting={SceneSearch.WaitingCount} freeOfficers={(local != null ? SceneSearch.FreeOfficers(local.transform.position) : -1)} reportsToday={SceneSearch.ReportsToday} memories={WitnessMemory.Count}"
+                + $" unseen={DevOverrides.ForceKillerUnseen}");
             foreach (CorpseRecord rec in CorpseTracker.Records)
             {
                 float d = -1f;
                 if (local != null && rec.Npc != null) d = Vector3.Distance(CorpseTracker.BodyPosition(rec.Npc), local.transform.position);
                 Core.Log?.Msg($"[Dev]   {ReactionDispatcher.SafeName(rec.Npc)} id={rec.Id} {d:F0}m killer={ReactionDispatcher.SafeCode(rec.Killer)}"
-                    + $" discovered={rec.Discovered} calling={rec.Calling} dispatched={rec.Dispatched} settled={rec.Settled}");
+                    + $" discovered={rec.Discovered} killerSeen={rec.KillerSeen} calling={rec.Calling} dispatched={rec.Dispatched} settled={rec.Settled}");
             }
         }
 

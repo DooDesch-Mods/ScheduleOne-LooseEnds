@@ -19,9 +19,14 @@
 
 1. **Witnesses react.** A living NPC who actually *sees* a dead NPC reports it. A citizen pulls out
    their phone and calls the police over about 4 seconds; knock them out or kill them before the call
-   connects and nobody comes. A police officer reports at once. Officers are sent to the body and
-   search there; they only come after you if they spot you. A
-   body that is hidden from sight - in a dumpster, behind a wall, indoors, underwater, in bushes - is
+   connects and nobody comes. A police officer reports at once.
+   - **The witness saw only the body:** the police do not know who did it. An officer walks to the
+     body and searches the area for about 2 minutes. Nobody is wanted. If the officer sees you near
+     the body, you become the suspect. Each further body that day sends one more officer, up to 3.
+   - **The witness saw you at the body:** they describe you and you become the suspect. They also
+     remember your face until the next day and call again if they see you.
+
+   A body that is hidden from sight - in a dumpster, behind a wall, indoors, underwater, in bushes - is
    never seen, so nothing happens. That is the whole point: hide your bodies.
 2. **Corpses are heavier.** While you drag a body it resists being pulled: it lags behind, drags
    sluggishly and is heavier to throw, scaled by a configurable multiplier. Your own speed does not
@@ -61,7 +66,7 @@ Editable in `UserData/MelonPreferences.cfg`
 | `NoticeRadius` | 6 m | An NPC this close notices a body in any direction. |
 | `ReactionDelaySeconds` | 3 | Delay after the first sighting before the witness reacts. |
 | `WitnessCallsPolice` | on | A citizen phones the police over about 4 s. Off = instant report. |
-| `PursuitLevel` | 1 | 1 Investigating, 2 Under arrest, 3 Wanted, 4 Wanted dead. |
+| `PursuitLevel` | 1 | Instant report on a killer the witness saw: 1 Investigating, 2 Under arrest, 3 Wanted, 4 Wanted dead. |
 | `OncePerCorpse` | on | Report each body at most once. |
 | `CorpseWeightMultiplier` | 5 | How hard a dragged body resists (1 = vanilla, up to 20). |
 

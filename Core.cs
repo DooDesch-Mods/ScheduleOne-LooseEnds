@@ -94,6 +94,8 @@ namespace LooseEnds
         private static void ResetState()
         {
             ReactionDispatcher.CancelAllCalls();
+            SceneSearch.Clear();
+            WitnessMemory.Clear();
             CorpseTracker.Clear();
             KillerRegistry.Clear();
             ArrestWatcher.Clear();
@@ -158,6 +160,10 @@ namespace LooseEnds
             ArrestWatcher.Tick();
 
             float dt = Time.deltaTime;
+
+            // Both outlive the body: a search runs after the corpse is gone, a witness remembers until the next day.
+            SceneSearch.Tick(dt);
+            WitnessMemory.Tick(dt);
 
             // Safety-net reconcile: keep the live corpse set in sync with the world.
             _reconcileAccum += dt;

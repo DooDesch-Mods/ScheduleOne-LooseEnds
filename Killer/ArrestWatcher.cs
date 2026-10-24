@@ -43,8 +43,9 @@ namespace LooseEnds.Killer
         {
             int attributions = KillerRegistry.ClearFor(p);
             int bodies = CorpseTracker.SettleFor(p);
+            int memories = Reaction.WitnessMemory.ForgetKiller(p);
             Core.Log?.Msg($"[Arrest] {Reaction.ReactionDispatcher.SafeCode(p)} (player id={id}, mins since arrest {prevMins}->{mins}) " +
-                          $"arrested - settled {bodies} bodies, cleared {attributions} attributions.");
+                          $"arrested - settled {bodies} bodies, cleared {attributions} attributions, {memories} witness memories.");
 #if SNITCH
             Snitch.Api.Profiler.Log("LooseEnds", $"{Reaction.ReactionDispatcher.SafeCode(p)} arrested - settled {bodies} bodies.");
 #endif

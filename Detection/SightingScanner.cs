@@ -123,11 +123,13 @@ namespace LooseEnds.Detection
                     rec.Discovered = true;
                     rec.FirstSeenTime = Time.time;
                     rec.Discoverer = obs;
+                    rec.KillerSeen = Reaction.ReactionDispatcher.WitnessSeesKiller(obs, rec.Killer);
 #if DEBUG
                     found++;
 #endif
                     Core.Log?.Msg($"[Witness] corpse {rec.Id} SEEN by {Reaction.ReactionDispatcher.SafeName(obs)} " +
-                                  $"({Mathf.Sqrt(dsq):F1}m, killer={Reaction.ReactionDispatcher.SafeCode(rec.Killer)}).");
+                                  $"({Mathf.Sqrt(dsq):F1}m, killer={Reaction.ReactionDispatcher.SafeCode(rec.Killer)}, " +
+                                  $"killer seen={rec.KillerSeen}).");
                     break;   // stop scanning observers for this corpse
                 }
 #if DEBUG

@@ -79,9 +79,11 @@ namespace LooseEnds.Config
                 "ON: a civilian witness calls the police over about 4 seconds; knock them out or kill them before the " +
                 "call connects to stop it. OFF: the police are alerted at once. Police officers always report at once.");
             _requirePlayerSeen = Create("RequirePlayerAlsoSeen", false, "Killer must also be seen",
-                "ON: the witness must also see the killer before anything happens. OFF: seeing the body is enough.");
+                "ON: a witness reports only once they also see the killer. OFF: a witness who sees only the body " +
+                "reports it, and officers search the scene.");
             _pursuitLevel = Create("PursuitLevel", 1, "Pursuit level (1-4)",
-                "Police status a report gives the killer: 1 Investigating, 2 Under arrest, 3 Wanted, 4 Wanted dead.",
+                "Police status an instant report (police witness, or phone call off) gives a killer the witness saw: " +
+                "1 Investigating, 2 Under arrest, 3 Wanted, 4 Wanted dead. A phoned report always gives Investigating.",
                 new MelonLoader.Preferences.ValueRange<int>(1, 4));
             _oncePerCorpse = Create("OncePerCorpse", true, "Report each body once",
                 "ON: a body is reported at most once. OFF: it can be reported again after the cooldown below.");
@@ -154,12 +156,14 @@ namespace LooseEnds.Config
     }
 
 #if DEBUG
-    /// <summary>Runtime-only dev switches set from the dev console ('le scanlog', 'le pursuit', 'le mp'). Never saved.</summary>
+    /// <summary>Runtime-only dev switches set from the dev console ('le scanlog', 'le pursuit', 'le mp', 'le unseen', 'le busy'). Never saved.</summary>
     internal static class DevOverrides
     {
         internal static bool LogWitnessScan;
         internal static int ForcePursuitLevel;
         internal static bool ForceEnableInMultiplayer;
+        internal static bool ForceKillerUnseen;   // every witness reports only the body (scene search)
+        internal static bool ForceStationBusy;    // the station reports no free officer (scene search waits)
     }
 #endif
 }
