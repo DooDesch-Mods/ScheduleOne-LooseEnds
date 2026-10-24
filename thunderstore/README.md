@@ -7,13 +7,15 @@
 > police, police enter the game's real **"Investigating"** pursuit - and makes carried corpses heavier,
 > so hauling a body to its hiding spot has real weight and stress.
 
-![Version](https://img.shields.io/badge/version-1.1.1-blue)
+![Version](https://img.shields.io/badge/version-1.2.0-blue)
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![S1API](https://img.shields.io/badge/S1API-required-orange)
 [![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
 
 [![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi/badge.svg)](https://mlvscan.com/attestations/att_bEggRi5D-070aL4nvAywhxSi)
+
+![A witness phones the police, officers walk to the body](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/header.jpg)
 
 ## What it does
 
@@ -34,8 +36,8 @@
 
 ## Features
 
-- **Real line of sight.** Detection uses each nearby NPC's own vision cone (`VisionCone.IsPointWithinSight`),
-  so it honors field of view and the game's occlusion layers. A hidden body is genuinely unseen.
+- **Line of sight.** An NPC sees a body only in front of them or right next to them. Walls, cover and
+  bushes hide it.
 - **Killer attribution.** The heat goes to whoever actually did it, captured at attack time. Unknown
   (environmental / NPC-vs-NPC) deaths are blamed on you in single-player, and on nobody in co-op.
 - **One arrest settles your spree.** After an arrest the bodies you left lying around are not reported
@@ -46,6 +48,11 @@
   throttled and only runs while a body exists.
 - **Host-authoritative.** Detection and every police/pursuit write run only on the server/host through the
   game's own networked calls, so they replicate to clients.
+
+## Screenshots
+
+![A witness on the phone, the body lies in the bushes](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/call.jpg)
+![Two officers walk to the body at dusk](https://raw.githubusercontent.com/DooDesch-Mods/ScheduleOne-LooseEnds/main/docs/img/search.jpg)
 
 ## Requirements
 
@@ -84,3 +91,7 @@ Updating from 1.1.1 keeps your old setting, which was off. Set `EnableInMultipla
 ## License
 
 MIT. See the included LICENSE.md.
+
+This mod is written with help from generative AI tools (Anthropic Claude, OpenAI Codex).
+
+If you have fun with it, a like on the [Thunderstore page](https://thunderstore.io/c/schedule-i/p/DooDesch/LooseEnds/) really helps other people find it (thumbs up next to Download, you need to be logged in) - ty either way, and lemme know if anything breaks or you've got ideas

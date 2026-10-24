@@ -390,12 +390,12 @@ jobs:
           repo: thunderstore.io
           namespace: DooDesch
           name: LooseEnds
-          description: NPCs who see a corpse react (citizens call the police, police investigate) and carried bodies are heavier. Hide your bodies.
+          description: NPCs who see a body call the police. Officers search the scene and catch you if you stay close. Carried bodies are heavier. Hide your bodies.
           version: ${{ needs.build.outputs.version }}
           path: thunderstore-package
           deps: |
             LavaGang-MelonLoader-0.7.3
-            ifBars-S1API_Forked-3.1.1
+            ifBars-S1API_Forked-3.2.1
           categories: |
             Mods
 

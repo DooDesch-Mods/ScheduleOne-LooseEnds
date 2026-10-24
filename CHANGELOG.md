@@ -3,6 +3,28 @@
 All notable changes to Loose Ends are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [1.2.0] - 2026-10-24
+
+### Changed
+- A witness who only finds the body no longer gives you away. Officers walk over and search the area, and you become
+  a suspect only if one sees you within 20 m of the body.
+- Each further body on the same day sends one more officer to the search, up to 3. When every officer is out, the
+  report waits up to 2 minutes for one.
+- A witness who sees you at the body describes you, remembers your face until the next day and calls again if they
+  spot you.
+- In co-op an arrest clears only the arrested player's bodies. Your friend's bodies stay open.
+- Witnesses react in co-op by default (`EnableInMultiplayer`). A config file from 1.1.1 keeps its old value, which
+  was off.
+
+### Removed
+- `UseVisionConeRange`, `DetectionRange`, `ObserverCullRadius`, `ScanIntervalSeconds` and `MaxRaycastsPerScan`. How
+  far witnesses look now follows `BodySightRange` and `NoticeRadius`.
+
+### Fixed
+- Runs on Schedule I 0.4.7f12. Needs S1API 3.2.1, up from 3.1.1. Update it along with the mod.
+- In co-op, bodies left by the other player were checked at the middle of the map, so nobody near them reacted.
+- `RequirePlayerAlsoSeen` checked whether the witness saw the host instead of the killer.
+
 ## [1.1.1] - 2026-08-01
 
 ### Changed
