@@ -4,6 +4,8 @@ A MelonLoader (IL2CPP) mod for **Schedule I** that makes dead bodies actually ma
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/looseends](https://support.doodesch.de/looseends).
 
+**Download:** [Nexus Mods](https://www.nexusmods.com/schedule1/mods/2948) · [Thunderstore](https://thunderstore.io/c/schedule-i/p/DooDesch/LooseEnds/) · [GitHub Releases](https://github.com/DooDesch-Mods/ScheduleOne-LooseEnds/releases)
+
 [![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
 
 [![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_Ue4y9faLLmbfD7f5y6qc18NH/badge.svg)](https://mlvscan.com/attestations/att_Ue4y9faLLmbfD7f5y6qc18NH)
@@ -45,7 +47,24 @@ response is.
 ## Requirements
 
 - MelonLoader 0.7.3+ (IL2CPP build of Schedule I)
-- [S1API](https://thunderstore.io/c/schedule-i/p/ifBars/S1API_Forked/) (Il2Cpp). Loose Ends does not load without it.
+- [S1API](https://www.nexusmods.com/schedule1/mods/1194) (Il2Cpp). Loose Ends does not load without it.
+
+## Installation
+
+### Recommended: Nexus Mods
+
+1. Install **MelonLoader 0.7.3** for Schedule I ([melonwiki.xyz](https://melonwiki.xyz/)).
+2. Download Loose Ends from [Nexus Mods](https://www.nexusmods.com/schedule1/mods/2948) and install it with Vortex,
+   or put **`LooseEnds.dll`** into your Schedule I `Mods/` folder.
+3. Get S1API from its Nexus page the same way.
+
+### Thunderstore mod manager
+
+Install with a mod manager (r2modman / Gale) from the Schedule I community, or use the [Thunderstore page](https://thunderstore.io/c/schedule-i/p/DooDesch/LooseEnds/).
+
+### Manual
+
+Download the zip from [GitHub Releases](https://github.com/DooDesch-Mods/ScheduleOne-LooseEnds/releases) and put `LooseEnds.dll` into your Schedule I `Mods/` folder.
 
 ## How it works
 
