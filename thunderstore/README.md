@@ -2,8 +2,6 @@
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/looseends](https://support.doodesch.de/looseends).
 
-[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de)
-
 > **Hide your bodies, or face the heat.** In vanilla, police and citizens walk over a corpse like it
 > isn't there. Loose Ends makes living NPCs who actually *see* a dead body react - citizens call the
 > police, police enter the game's real **"Investigating"** pursuit - and makes carried corpses heavier,
@@ -13,7 +11,7 @@
 ![Game](https://img.shields.io/badge/game-Schedule%20I-purple)
 ![MelonLoader](https://img.shields.io/badge/MelonLoader-0.7.3+-green)
 ![S1API](https://img.shields.io/badge/S1API-required-orange)
-[![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
+[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de) [![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
 
 [![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_Ue4y9faLLmbfD7f5y6qc18NH/badge.svg)](https://mlvscan.com/attestations/att_Ue4y9faLLmbfD7f5y6qc18NH)
 
