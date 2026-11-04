@@ -2,6 +2,8 @@
 
 > 🛟 **Need help or found a bug?** Get support at [support.doodesch.de/looseends](https://support.doodesch.de/looseends).
 
+[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de)
+
 > **Hide your bodies, or face the heat.** In vanilla, police and citizens walk over a corpse like it
 > isn't there. Loose Ends makes living NPCs who actually *see* a dead body react - citizens call the
 > police, police enter the game's real **"Investigating"** pursuit - and makes carried corpses heavier,
@@ -87,6 +89,12 @@ The witness system is host-authoritative: the host runs it for every player, and
 
 Updating from 1.1.1 keeps your old setting, which was off. Set `EnableInMultiplayer = true` in
 `UserData/MelonPreferences.cfg` to turn it on.
+
+## Community
+
+[![DooDesch Mods on Discord](https://mods.doodesch.de/img/card.svg)](https://mods.doodesch.de)
+
+Join the DooDesch Mods Discord: update pings, polls on what comes next, and playtests of new mods.
 
 ## License
 

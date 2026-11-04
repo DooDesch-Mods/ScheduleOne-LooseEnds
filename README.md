@@ -6,6 +6,8 @@ A MelonLoader (IL2CPP) mod for **Schedule I** that makes dead bodies actually ma
 
 **Download:** [Nexus Mods](https://www.nexusmods.com/schedule1/mods/2948) · [Thunderstore](https://thunderstore.io/c/schedule-i/p/DooDesch/LooseEnds/) · [GitHub Releases](https://github.com/DooDesch-Mods/ScheduleOne-LooseEnds/releases)
 
+[![Discord](https://mods.doodesch.de/img/badge.svg)](https://mods.doodesch.de)
+
 [![Polyfill](https://polyfill.doomods.com/badge/loose-ends.svg)](https://polyfill.doomods.com/mod/loose-ends)
 
 [![MLVScan LooseEnds.dll](https://mlvscan.com/attestations/att_Ue4y9faLLmbfD7f5y6qc18NH/badge.svg)](https://mlvscan.com/attestations/att_Ue4y9faLLmbfD7f5y6qc18NH)
@@ -181,5 +183,11 @@ More: `le status` (bodies and their state), `le find` (start the response on the
   instances, not yet with two players on separate machines.
 - Killer attribution covers player-inflicted deaths; environmental / NPC-vs-NPC deaths are still detected as bodies but
   have no player to blame (single-player can fall back to the local player; co-op falls back to no attribution).
+
+## Community
+
+[![DooDesch Mods on Discord](https://mods.doodesch.de/img/card.svg)](https://mods.doodesch.de)
+
+Join the DooDesch Mods Discord: update pings, polls on what comes next, and playtests of new mods.
 
 This mod is written with help from generative AI tools (Anthropic Claude, OpenAI Codex).
